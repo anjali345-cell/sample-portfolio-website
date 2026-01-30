@@ -12,6 +12,7 @@ import {
   Moon,
   Monitor,
 } from "lucide-react";
+import Image from "next/image";
 
 // Aceternity UI - Spotlight Effect
 const Spotlight = ({ className = "", fill = "white" }) => {
@@ -227,6 +228,23 @@ const TextReveal = ({
   );
 };
 
+const FadeInSection = ({
+  children,
+  delay = 0,
+}: {
+  children: ReactNode | null;
+  delay?: number;
+}) => (
+  <motion.div
+    initial={{ opacity: 0, y: 30 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-100px" }}
+    transition={{ duration: 0.6, delay }}
+  >
+    {children}
+  </motion.div>
+);
+
 const styles = `
   @keyframes blob {
     0% { transform: translate(0px, 0px) scale(1); }
@@ -252,25 +270,44 @@ const styles = `
 const Portfolio = () => {
   const [activeSection, setActiveSection] = useState("home");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [theme, setTheme] = useState("light");
-  const [actualTheme, setActualTheme] = useState("light");
-  // const setActualTheme: (value: React.SetStateAction<string>) => void = useState('');
+  const [theme, setTheme] = useState<"light" | "dark" | "device">("light");
+  const [systemTheme, setSystemTheme] = useState<"light" | "dark">(() => {
+    if (typeof window !== "undefined") {
+      return window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+    }
+    return "light";
+  });
+  const [mediaType, setMediaType] = useState<"image" | "video" | null>(null);
+  const [mediaSrc, setMediaSrc] = useState<string>("");
+
+  const handleMediaUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const fileType = file.type.startsWith("image/") ? "image" : "video";
+      setMediaType(fileType);
+      setMediaSrc(URL.createObjectURL(file));
+    }
+  };
   const { scrollYProgress } = useScroll();
   const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
 
+  // ✅ NEW: Add this effect (runs ONCE, no cascading renders)
   useEffect(() => {
-    if (theme === "device") {
-      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-      setActualTheme(mediaQuery.matches ? "dark" : "light");
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
-      const handler = (e: MediaQueryListEvent) =>
-        setActualTheme(e.matches ? "dark" : "light");
-      mediaQuery.addEventListener("change", handler);
-      return () => mediaQuery.removeEventListener("change", handler);
-    } else {
-      setActualTheme(theme);
-    }
-  }, [theme]);
+    const handler = (e: MediaQueryListEvent) => {
+      setSystemTheme(e.matches ? "dark" : "light");
+    };
+
+    mediaQuery.addEventListener("change", handler);
+    return () => mediaQuery.removeEventListener("change", handler);
+  }, []); // ✅ Empty array - runs once on mount
+
+  // ✅ NEW: Derive actualTheme (no setState, no cascading renders!)
+  const actualTheme: "light" | "dark" =
+    theme === "device" ? systemTheme : theme;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -337,35 +374,63 @@ const Portfolio = () => {
   const projects = [
     {
       title: "AI Chatbot - Thinko",
+     mediaType: "video",
+      mediaSrc: "/videos/project2.mp4",
       description:
-        "An intelligent chatbot application with natural language processing, context awareness, and multi-turn conversation capabilities.",
+        "An intelligent chatbot application with natural language processing, context awareness, and multi-turn conversation capabilities. (Still working on it to make it more better!)",
       tech: ["React", "Next.js", "Tailwind CSS", "OpenAI API", "Supabase"],
-      github: "https://github.com",
-      live: "https://example.com",
+      github: "https://github.com/anjali345-cell/Thinko",
+      live: "https://thinko-ai-chatbot.netlify.app/",
     },
     {
       title: "UI Clone - SkiperUI",
+      mediaType: "Image",
+      mediaSrc: "/public/skiperUiVideo.mp4",
       description:
         "Collaborative task management tool with real-time updates, drag-and-drop functionality, and team features.",
       tech: ["React", "Node.js", "Express", "MongoDB"],
-      github: "https://github.com",
-      live: "https://example.com",
+      github: "https://github.com/anjali345-cell/skiper.ui",
+      live: "https://skiperuia.netlify.app/",
     },
     {
       title: "Earthquake Tracker",
+      mediaType: "video",
+      mediaSrc: "/videos/project2.mp4",
       description:
         "Real-time earthquake monitoring application with interactive maps and detailed seismic data visualization.",
       tech: ["React", "Tailwind CSS", "Earthquake API"],
-      github: "https://github.com",
-      live: "https://example.com",
+      github: "https://github.com/anjali345-cell/earthquake_visualizer",
+      live: "https://earthquake-visualizer-02.netlify.app/",
     },
     {
       title: "Mortgage Calculator",
+      mediaType: "Image",
+      mediaSrc: "/images/better.com.png",
       description:
         "Interactive mortgage calculator with amortization schedule and visual repayment breakdown.",
       tech: ["Next.js", "React", "Tailwind CSS"],
-      github: "https://github.com",
-      live: "https://example.com",
+      github: "https://github.com/anjali345-cell/Better.com",
+      live: "https://better-com-henna.vercel.app/",
+    },
+    {
+      title: "My Portfolio Website",
+      mediaType: "video",
+      mediaSrc: "/videos/project2.mp4",
+      description:
+        "A responsive portfolio website showcasing projects, skills, and experience.",
+      tech: ["React", "Next.js", "Tailwind CSS"],
+      github: "https://github.com/anjali345-cell/portfolio-website",
+      live: "https://anjali-portfolio-02.netlify.app/",
+    },
+    {
+      title: "E-commerce Store",
+      mediaType: "video",
+      mediaSrc: "/videos/project2.mp4",
+      description:
+        "Full-featured e-commerce platform with product listings, shopping cart, user authentication, and payment processing.",
+      tech: ["React", "Next.js", "Tailwind CSS", "Stripe API"],
+      github: "https://github.com/anjali345-cell/ecommerce-website",
+      live: "https://e-commerce-shna.netlify.app/",
     },
   ];
 
@@ -378,23 +443,6 @@ const Portfolio = () => {
         "Developing responsive web applications using React and Next.js. Collaborated with design team to implement pixel-perfect UI components and improved page load times by 40%.",
     },
   ];
-
-  const FadeInSection = ({
-    children,
-    delay = 0,
-  }: {
-    children: ReactNode | null;
-    delay?: number;
-  }) => (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.6, delay }}
-    >
-      {children}
-    </motion.div>
-  );
 
   return (
     <>
@@ -537,7 +585,7 @@ const Portfolio = () => {
                 {navItems.map((item) => (
                   <button
                     key={item}
-                    onClick={() => scrollToSection(item.toLowerCase())}
+                    onClick={() => scrollToSection({ sectionId: "projects" })}
                     className={`block w-full text-left px-4 py-2 rounded-lg transition-colors ${
                       actualTheme === "dark"
                         ? "text-gray-300 hover:text-rose-400 hover:bg-gray-800"
@@ -661,7 +709,7 @@ const Portfolio = () => {
               >
                 <MovingBorder
                   duration={3000}
-                  onClick={() => scrollToSection("projects")}
+                  onClick={() => scrollToSection({ sectionId: "projects" })}
                 >
                   <span className="font-medium">View My Work</span>
                 </MovingBorder>
@@ -696,7 +744,7 @@ const Portfolio = () => {
                       actualTheme === "dark" ? "text-gray-300" : "text-gray-700"
                     }`}
                   >
-                    Hello! I'm Anjali, a frontend developer with a passion for
+                    Hello! I am Anjali, a frontend developer with a passion for
                     creating beautiful, functional web experiences. I love the
                     intersection of design and code, where creativity meets
                     logic to build products that users love.
@@ -719,8 +767,8 @@ const Portfolio = () => {
               <Card3D
                 className={`rounded-2xl shadow-md p-8 md:p-12 transition-colors ${
                   actualTheme === "dark"
-                    ? "bg-gradient-to-br from-gray-800/60 to-gray-700/60 backdrop-blur-sm"
-                    : "bg-gradient-to-br from-rose-50/80 to-amber-50/80 backdrop-blur-sm"
+                    ? "bg-linear-to-br from-gray-800/60 to-gray-700/60 backdrop-blur-sm"
+                    : "bg-linear-to-br from-rose-50/80 to-amber-50/80 backdrop-blur-sm"
                 }`}
               >
                 <div>
@@ -739,7 +787,7 @@ const Portfolio = () => {
                           : "text-gray-900"
                       }`}
                     >
-                      Bachelor of Technology in Computer Science
+                      Masters in Computer Science
                     </h4>
                     <p
                       className={`font-medium mb-2 transition-colors ${
@@ -748,7 +796,7 @@ const Portfolio = () => {
                           : "text-rose-700"
                       }`}
                     >
-                      XYZ University
+                      Awadhes Pratap Singh University , Rewa(M.P.)
                     </p>
                     <p
                       className={`transition-colors ${
@@ -914,12 +962,28 @@ const Portfolio = () => {
                   >
                     <div>
                       <div
-                        className={`h-48 transition-colors ${
+                        className={`h-48 relative transition-colors overflow-hidden ${
                           actualTheme === "dark"
-                            ? "bg-gradient-to-br from-gray-700 to-gray-800"
-                            : "bg-gradient-to-br from-rose-100 to-amber-100"
+                            ? "bg-linear-to-br from-gray-700 to-gray-800"
+                            : "bg-linear-to-br from-rose-100 to-amber-100"
                         }`}
-                      ></div>
+                      >
+                        {project.mediaType === "image" ? (
+                          <Image
+                            src={project.mediaSrc}
+                            alt={project.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <video
+                            src={project.mediaSrc}
+                            className="w-full h-full object-cover"
+                            autoPlay
+                            loop
+                            muted
+                          />
+                        )}
+                      </div>
                       <div className="p-8">
                         <h3
                           className={`text-2xl font-bold mb-3 transition-colors ${

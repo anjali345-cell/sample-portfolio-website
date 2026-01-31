@@ -279,17 +279,17 @@ const Portfolio = () => {
     }
     return "light";
   });
-  const [mediaType, setMediaType] = useState<"image" | "video" | null>(null);
-  const [mediaSrc, setMediaSrc] = useState<string>("");
+  // const [mediaType, setMediaType] = useState<"image" | "video" | null>(null);
+  // const [mediaSrc, setMediaSrc] = useState<string>("");
 
-  const handleMediaUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const fileType = file.type.startsWith("image/") ? "image" : "video";
-      setMediaType(fileType);
-      setMediaSrc(URL.createObjectURL(file));
-    }
-  };
+  // const handleMediaUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (file) {
+  //     const fileType = file.type.startsWith("image/") ? "image" : "video";
+  //     setMediaType(fileType);
+  //     setMediaSrc(URL.createObjectURL(file));
+  //   }
+  // };
   const { scrollYProgress } = useScroll();
   const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
 
@@ -384,7 +384,7 @@ const Portfolio = () => {
     },
     {
       title: "UI Clone - SkiperUI",
-      mediaType: "Image",
+      mediaType: "Video",
       mediaSrc: "/public/skiperUiVideo.mp4",
       description:
         "Collaborative task management tool with real-time updates, drag-and-drop functionality, and team features.",
@@ -673,7 +673,7 @@ const Portfolio = () => {
                   Hi, I am Anjali👋 <br />
                   <span
                     className={`text-3xl md:text-5xl font-serif font-bold mb-2 transition-colors ${
-                      actualTheme === "dark" ? "text-rose-500" : "text-rose-700"
+                      actualTheme === "dark" ? "text-gray-100" : "text-gray-900"
                     }`}
                   >
                     {" "}
@@ -954,11 +954,13 @@ const Portfolio = () => {
               {projects.map((project, index) => (
                 <FadeInSection key={index} delay={index * 0.1}>
                   <Card3D
-                    className={`rounded-2xl overflow-hidden transition-all ${
+                    className={`rounded-2xl overflow-hidden transition-all
+                       ${
                       actualTheme === "dark"
                         ? "bg-gray-800/50 backdrop-blur-sm shadow-lg"
                         : "bg-white/80 backdrop-blur-sm shadow-md"
-                    }`}
+                    }
+                        `}
                   >
                     <div>
                       <div
@@ -1154,7 +1156,7 @@ const Portfolio = () => {
                   <div className="flex justify-center gap-6 mt-8">
                     <motion.a
                       whileHover={{ scale: 1.2, rotateZ: 5 }}
-                      href="https://linkedin.com"
+                      href="https://www.linkedin.com/in/anjali-s-15187b22a/"
                       target="_blank"
                       rel="noopener noreferrer"
                       className={`transition-colors ${
@@ -1167,7 +1169,7 @@ const Portfolio = () => {
                     </motion.a>
                     <motion.a
                       whileHover={{ scale: 1.2, rotateZ: -5 }}
-                      href="https://github.com"
+                      href="https://github.com/anjali345-cell"
                       target="_blank"
                       rel="noopener noreferrer"
                       className={`transition-colors ${
@@ -1180,7 +1182,7 @@ const Portfolio = () => {
                     </motion.a>
                     <motion.a
                       whileHover={{ scale: 1.2, rotateZ: 5 }}
-                      href="mailto:anjali@example.com"
+                      href="mailto:anjali.sh93026@gmail.com"
                       className={`transition-colors ${
                         actualTheme === "dark"
                           ? "text-gray-300 hover:text-rose-400"
